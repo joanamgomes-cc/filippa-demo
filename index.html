@@ -792,9 +792,16 @@
 
     const WIDGET_URL = 'https://app.gptmaker.ai/widget/3F33EEC2BF95E358FD9D4AA03E354AA6/iframe';
 
+    function newUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
     function resetChat() {
       const iframe = document.querySelector('.wc-frame iframe');
-      if (iframe) { iframe.src = WIDGET_URL + '?t=' + Date.now(); }
+      if (iframe) { iframe.src = WIDGET_URL + '?recipient=' + newUUID(); }
     }
 
     /* ── Conexões animadas ─────────────────────────────────── */

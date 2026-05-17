@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>filIPPa — Assistente Virtual IPPortalegre</title>
+  <!-- filIPPa com IPP em amarelo: fil<span style="color:#f5c518">IPP</span>a -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde:      #1a5c3a;
+      --verde-mid:  #22744a;
+      --verde-neon: #2ecc71;
+      --escuro:     #0d0d0d;
+      --escuro-2:   #141414;
+      --escuro-3:   #1c1c1c;
+      --branco:     #ffffff;
+      --cinza:      #a0a0a0;
+      --cinza-claro:#e8e8e8;
+      --dourado:    #c9a84c;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--escuro);
+      color: var(--branco);
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO BANNER ─── */
+    .hero {
+      position: relative;
+      background: var(--escuro-2);
+      padding: 28px 48px 26px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      border-bottom: 1px solid #2a2a2a;
+      overflow: hidden;
+    }
+
+    /* linhas decorativas em fundo */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 80px,
+          rgba(46,204,113,.04) 80px,
+          rgba(46,204,113,.04) 81px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 80px,
+          rgba(46,204,113,.04) 80px,
+          rgba(46,204,113,.04) 81px
+        );
+      pointer-events: none;
+    }
+
+    /* barra verde lateral esquerda */
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 5px;
+      background: linear-gradient(to bottom, var(--verde-neon), var(--verde));
+    }
+
+    .hero-event {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .event-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--verde-neon);
+      margin-bottom: 10px;
+    }
+
+    .event-label::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--verde-neon);
+    }
+
+    .hero-event h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--branco);
+      letter-spacing: -1px;
+    }
+
+    .hero-event h1 em {
+      font-style: normal;
+      color: var(--verde-neon);
+    }
+
+    .hero-event p {
+      margin-top: 10px;
+      font-size: .85rem;
+      color: var(--cinza);
+      max-width: 480px;
+      line-height: 1.5;
+    }
+
+    .hero-divider {
+      width: 1px;
+      height: 70px;
+      background: #2e2e2e;
+      flex-shrink: 0;
+    }
+
+    .hero-agent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .agent-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--verde), var(--verde-neon));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 0 24px rgba(46,204,113,.25);
+    }
+
+    .agent-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .agent-tag {
+      font-size: .7rem;
+      color: var(--cinza);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* live dot */
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--verde-neon);
+      letter-spacing: .5px;
+      margin-top: 4px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--verde-neon);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .4; transform: scale(.7); }
+    }
+
+    .hero-logo {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .hero-logo img {
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .hero-logo span {
+      font-size: .65rem;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* ─── BODY ─── */
+    .body {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 0;
+      height: calc(100vh - 130px - 48px); /* hero + footer */
+      min-height: 520px;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--escuro-2);
+      border-right: 1px solid #222;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      overflow-y: auto;
+    }
+
+    .sidebar-section h3 {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 14px;
+    }
+
+    .sidebar-intro p {
+      font-size: .84rem;
+      line-height: 1.65;
+      color: #999;
+    }
+
+    .sidebar-intro strong {
+      color: var(--branco);
+    }
+
+    /* tópicos */
+    .topic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .topic {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: .83rem;
+      color: #bbb;
+      transition: background .15s, color .15s;
+    }
+
+    .topic:hover {
+      background: #1e1e1e;
+      color: var(--branco);
+    }
+
+    .topic-icon {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* sugestões */
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      background: #1a1a1a;
+      border: 1px solid #2e2e2e;
+      color: #bbb;
+      font-size: .75rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+
+    .pill:hover {
+      border-color: var(--verde-neon);
+      color: var(--verde-neon);
+    }
+
+
+    /* ─── FOOTER ─── */
+    footer {
+      height: 48px;
+      background: #0a0a0a;
+      border-top: 1px solid #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    footer span {
+      font-size: .72rem;
+      color: #444;
+      letter-spacing: .5px;
+    }
+
+    footer img.footer-logo {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    footer .sep {
+      color: #2a2a2a;
+    }
+
+    .reset-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid #2e2e2e;
+      color: #666;
+      font-family: 'Inter', sans-serif;
+      font-size: .68rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--verde-neon);
+      color: var(--verde-neon);
+    }
+
+    /* ─── Painel direito ─── */
+    .widget-area {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      background: #0e0e0e;
+      padding: 0 48px;
+    }
+
+    /* fundo grid pontilhado */
+    .widget-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(46,204,113,.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    /* ─── COLUNAS DE CARDS ─── */
+    .tc-column {
+      width: 210px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tc-card {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      background: rgba(15,15,15,.95);
+      border: 1px solid rgba(46,204,113,.12);
+      border-radius: 10px;
+      cursor: default;
+      transition: border-color .25s, box-shadow .25s;
+      position: relative;
+    }
+
+    .tc-card:hover {
+      border-color: rgba(46,204,113,.4);
+      box-shadow: 0 0 16px rgba(46,204,113,.08);
+    }
+
+    /* ponto de conexão — lado direito (coluna esquerda) */
+    .tc-card::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--verde-neon);
+      box-shadow: 0 0 6px var(--verde-neon);
+    }
+
+    /* ponto de conexão — lado esquerdo (coluna direita) */
+    .tc-card--right::after {
+      right: auto;
+      left: -5px;
+    }
+
+    .tc-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      background: rgba(46,204,113,.07);
+      border: 1px solid rgba(46,204,113,.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tc-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--verde-neon);
+    }
+
+    .tc-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tc-text strong {
+      font-size: .78rem;
+      color: var(--branco);
+      font-weight: 600;
+    }
+
+    .tc-text span {
+      font-size: .67rem;
+      color: #888;
+    }
+
+    /* ─── WIDGET CENTRAL ─── */
+    .widget-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .wc-label {
+      font-family: 'Syne', sans-serif;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--verde-neon);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .wc-label-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--verde-neon);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    .wc-frame {
+      width: 500px;
+      height: min(640px, calc(100vh - 210px));
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(46,204,113,.22);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.5),
+        0 0 56px rgba(46,204,113,.12),
+        0 24px 64px rgba(0,0,0,.5);
+      background: #0d0d0d;
+      position: relative;
+    }
+
+    /* pontos de conexão — esquerda e direita do frame */
+    .wc-frame::before,
+    .wc-frame::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--verde-neon);
+      box-shadow: 0 0 8px var(--verde-neon);
+      z-index: 10;
+    }
+    .wc-frame::before { left:  -5px; }
+    .wc-frame::after  { right: -5px; }
+
+    .wc-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* ─── SVG CONNECTIONS ─── */
+    .connections-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    /* ─── Hero CTA ─── */
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-cta-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, var(--verde), var(--verde-neon));
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      padding: 14px 32px;
+      border-radius: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 0 32px rgba(46,204,113,.35);
+      animation: cta-glow 2.4s ease-in-out infinite;
+    }
+
+    /* ─── CTA ─── */
+    .cta-block {
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--verde), var(--verde-neon));
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(46,204,113,.3);
+      animation: cta-glow 2.4s ease-in-out infinite;
+    }
+
+    @keyframes cta-glow {
+      0%, 100% { box-shadow: 0 0 24px rgba(46,204,113,.25); }
+      50%       { box-shadow: 0 0 42px rgba(46,204,113,.55); }
+    }
+
+    /* ─── Scrollbar escura ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- HERO BANNER -->
+  <header class="hero">
+    <div class="hero-event">
+      <div class="event-label">ESTGD · Portalegre · 27 de Maio de 2026</div>
+      <h1>Dia Internacional<br/>do <em>Marketing</em></h1>
+      <p>Uma iniciativa que traz a Inteligência Artificial ao serviço da comunicação institucional — conheça a <strong style="color:#fff">fil<span style="color:#f5c518">IPP</span>a</strong>, a assistente virtual criada para demonstrar como seria o atendimento 24/7 no site do IPPortalegre.</p>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-agent">
+      <div class="agent-avatar">🎓</div>
+      <div class="agent-name">fil<span style="color:#f5c518">IPP</span>a</div>
+      <div class="agent-tag">Assistente Virtual · IPPortalegre</div>
+      <div class="agent-tag" style="color:#c9a84c;letter-spacing:2px;">Demonstração</div>
+      <div class="live-badge"><span class="live-dot"></span>Online</div>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-cta">
+      <div class="hero-cta-btn" onclick="scrollToWidget()">
+        Testa-me!
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg>
+      </div>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-logo">
+      <img
+        src="logo_tomagaleads.png"
+        alt="TOMAGA Leads"
+        onerror="this.outerHTML='<div style=\'font-family:Syne,sans-serif;font-weight:800;font-size:1rem;color:#fff;letter-spacing:-0.5px\'>TOMAGA<span style=\'color:#2ecc71\'>.</span>Leads</div>'"
+      />
+      <span>Powered by</span>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-section sidebar-intro">
+        <h3>Conhece a fil<span style="color:#f5c518">IPP</span>a</h3>
+        <p>
+          A <strong>fil<span style="color:#f5c518">IPP</span>a</strong> é um assistente virtual baseado em
+          <strong>Inteligência Artificial</strong>, desenvolvido como protótipo
+          para o <strong>Instituto Politécnico de Portalegre</strong>.<br /><br />
+          Responde em tempo real a dúvidas de estudantes, futuros alunos e
+          comunidade — disponível 24 horas por dia.
+        </p>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Temas disponíveis</h3>
+        <div class="topic-list">
+          <div class="topic"><span class="topic-icon">📚</span> Cursos e oferta formativa</div>
+          <div class="topic"><span class="topic-icon">📋</span> Candidaturas e acesso</div>
+          <div class="topic"><span class="topic-icon">🏠</span> Ação social e bolsas</div>
+          <div class="topic"><span class="topic-icon">🌍</span> Erasmus+ e mobilidade</div>
+          <div class="topic"><span class="topic-icon">🚀</span> Empreendedorismo</div>
+          <div class="topic"><span class="topic-icon">📍</span> Contactos e localização</div>
+          <div class="topic"><span class="topic-icon">💻</span> Plataformas e portais</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Experimenta perguntar</h3>
+        <div class="pill-list">
+          <span class="pill">Que cursos de Marketing existem?</span>
+          <span class="pill">Como me candidato ao IPP?</span>
+          <span class="pill">Quero uma bolsa de estudo</span>
+          <span class="pill">O que é o Erasmus+?</span>
+          <span class="pill">Onde fica o IPPortalegre?</span>
+          <span class="pill">Como acedo ao Campus Virtual?</span>
+          <span class="pill">Existe apoio psicológico?</span>
+        </div>
+      </div>
+
+      <div class="cta-block">
+        <div class="cta-btn" onclick="scrollToWidget()">
+          Testa-me!
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- PAINEL DIREITO -->
+    <div class="widget-area" id="widget-section">
+
+      <!-- SVG das ligações animadas -->
+      <svg class="connections-svg" id="connections-svg"></svg>
+
+      <!-- CARDS ESQUERDA -->
+      <div class="tc-column">
+
+        <div class="tc-card" data-idx="0" data-side="left">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>IA Generativa</strong>
+            <span>Linguagem natural, respostas contextuais</span>
+          </div>
+        </div>
+
+        <div class="tc-card" data-idx="1" data-side="left">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>Bilingue</strong>
+            <span>Português · English</span>
+          </div>
+        </div>
+
+        <div class="tc-card" data-idx="2" data-side="left">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>Resposta imediata</strong>
+            <span>Zero espera · Disponível 24/7</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- WIDGET CENTRAL -->
+      <div class="widget-center">
+        <div class="wc-frame" id="wc-frame">
+          <iframe
+            src="https://app.gptmaker.ai/widget/3F33EEC2BF95E358FD9D4AA03E354AA6/iframe"
+            frameborder="0"
+            allow="microphone"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- CARDS DIREITA -->
+      <div class="tc-column">
+
+        <div class="tc-card tc-card--right" data-idx="3" data-side="right">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>Encaminhamento preciso</strong>
+            <span>Links reais · Sem alucinações</span>
+          </div>
+        </div>
+
+        <div class="tc-card tc-card--right" data-idx="4" data-side="right">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>Base de conhecimento</strong>
+            <span>Oferta formativa · Serviços · FAQs</span>
+          </div>
+        </div>
+
+        <div class="tc-card tc-card--right" data-idx="5" data-side="right">
+          <div class="tc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="tc-text">
+            <strong>Não substitui colaboradores</strong>
+            <span>Liberta os colaboradores para outro tipo de tarefas</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function scrollToWidget() {
+      document.getElementById('widget-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const WIDGET_URL = 'https://app.gptmaker.ai/widget/3F33EEC2BF95E358FD9D4AA03E354AA6/iframe';
+
+    function resetChat() {
+      const iframe = document.querySelector('.wc-frame iframe');
+      if (iframe) { iframe.src = WIDGET_URL + '?t=' + Date.now(); }
+    }
+
+    /* ── Conexões animadas ─────────────────────────────────── */
+    const NS    = 'http://www.w3.org/2000/svg';
+    const XLINK = 'http://www.w3.org/1999/xlink';
+
+    function drawConnections() {
+      const svg   = document.getElementById('connections-svg');
+      const frame = document.getElementById('wc-frame');
+      const cards = document.querySelectorAll('.tc-card[data-idx]');
+      const area  = document.getElementById('widget-section');
+
+      if (!svg || !frame || !cards.length) return;
+      svg.innerHTML = '';
+
+      const ar = area.getBoundingClientRect();
+      const fr = frame.getBoundingClientRect();
+
+      // pontos de ancoragem no widget
+      const wLeft  = fr.left  - ar.left;
+      const wRight = fr.right - ar.left;
+      const wMidY  = fr.top   - ar.top + fr.height / 2;
+
+      const durations = [2.8, 2.2, 3.1, 2.6, 3.4, 2.0];
+      const delays    = [0,   0.8, 1.6, 0.4, 1.2, 2.0];
+      const colors    = ['#2ecc71','#27ae60','#1abc9c','#2ecc71','#16a085','#52d68a'];
+
+      // defs para filtros de glow
+      const defs = document.createElementNS(NS, 'defs');
+      svg.appendChild(defs);
+
+      cards.forEach((card, i) => {
+        const side = card.dataset.side;
+        const cr   = card.getBoundingClientRect();
+        const cy   = cr.top - ar.top + cr.height / 2;
+
+        let cx, tx, ty;
+
+        if (side === 'left') {
+          cx = cr.right - ar.left;   // saída: direita do card
+          tx = wLeft;                // entrada: esquerda do widget
+        } else {
+          cx = cr.left - ar.left;    // saída: esquerda do card
+          tx = wRight;               // entrada: direita do widget
+        }
+        ty = wMidY;
+
+        // bezier simétrica de cada lado
+        const mid  = (cx + tx) / 2;
+        const cp1x = side === 'left' ? cx  + (mid - cx)  * 0.6 : cx  - (cx - mid) * 0.6;
+        const cp2x = side === 'left' ? tx  - (tx - mid)  * 0.6 : tx  + (mid - tx) * 0.6;
+        const d    = `M${cx},${cy} C${cp1x},${cy} ${cp2x},${ty} ${tx},${ty}`;
+        const pathId = `conn-path-${i}`;
+
+        // linha tracejada de fundo
+        const bg = document.createElementNS(NS, 'path');
+        bg.setAttribute('d', d);
+        bg.setAttribute('stroke', 'rgba(46,204,113,0.10)');
+        bg.setAttribute('stroke-width', '1.5');
+        bg.setAttribute('stroke-dasharray', '5 7');
+        bg.setAttribute('fill', 'none');
+        svg.appendChild(bg);
+
+        // path para animateMotion
+        const mp = document.createElementNS(NS, 'path');
+        mp.setAttribute('id', pathId);
+        mp.setAttribute('d', d);
+        mp.setAttribute('fill', 'none');
+        mp.setAttribute('stroke', 'none');
+        svg.appendChild(mp);
+
+        // filtro glow
+        const filter = document.createElementNS(NS, 'filter');
+        filter.setAttribute('id',     `glow-${i}`);
+        filter.setAttribute('x',      '-80%');
+        filter.setAttribute('y',      '-80%');
+        filter.setAttribute('width',  '260%');
+        filter.setAttribute('height', '260%');
+        const fe = document.createElementNS(NS, 'feGaussianBlur');
+        fe.setAttribute('stdDeviation', '2.5');
+        fe.setAttribute('result', 'blur');
+        filter.appendChild(fe);
+        const feMerge = document.createElementNS(NS, 'feMerge');
+        const n1 = document.createElementNS(NS, 'feMergeNode');
+        n1.setAttribute('in', 'blur');
+        const n2 = document.createElementNS(NS, 'feMergeNode');
+        feMerge.appendChild(n1);
+        feMerge.appendChild(n2);
+        filter.appendChild(feMerge);
+        defs.appendChild(filter);
+
+        // pulso animado
+        const dot = document.createElementNS(NS, 'circle');
+        dot.setAttribute('r',      '3.5');
+        dot.setAttribute('fill',   colors[i]);
+        dot.setAttribute('filter', `url(#glow-${i})`);
+
+        const anim = document.createElementNS(NS, 'animateMotion');
+        anim.setAttribute('dur',         `${durations[i]}s`);
+        anim.setAttribute('repeatCount', 'indefinite');
+        anim.setAttribute('begin',       `${delays[i]}s`);
+
+        const mpath = document.createElementNS(NS, 'mpath');
+        mpath.setAttributeNS(XLINK, 'href', `#${pathId}`);
+        anim.appendChild(mpath);
+        dot.appendChild(anim);
+        svg.appendChild(dot);
+      });
+    }
+
+    window.addEventListener('load',   drawConnections);
+    window.addEventListener('resize', drawConnections);
+  </script>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>Desenvolvido por</span>
+    <img
+      class="footer-logo"
+      src="logo_tomagaleads.png"
+      alt="TOMAGA Leads"
+      onerror="this.outerHTML='<strong style=\'font-size:.75rem;color:#666;font-family:Syne,sans-serif;letter-spacing:-.3px\'>TOMAGA Leads</strong>'"
+    />
+    <span class="sep">·</span>
+    <span>Dia Internacional do Marketing · ESTGD 2026</span>
+    <span class="sep">·</span>
+    <button class="reset-btn" onclick="resetChat()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.8"/></svg>
+      Nova conversa
+    </button>
+  </footer>
+
+</body>
+</html>

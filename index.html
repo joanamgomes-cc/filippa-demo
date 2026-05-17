@@ -610,26 +610,35 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
 
-    /* ─── RESPONSIVE — MOBILE ─── */
+    /* ─── MOBILE — ecrã de boas-vindas (balão flutuante) ─── */
+    .mobile-welcome {
+      display: none;
+    }
+
     @media (max-width: 768px) {
 
-      /* Hero: coluna única, padding reduzido */
+      /* Ocultar layout desktop */
+      .body   { display: none; }
+      footer  { display: none; }
+
+      /* Hero: coluna única, compacto */
       .hero {
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px 20px 16px;
-        gap: 14px;
+        padding: 24px 20px 20px;
+        gap: 12px;
+        min-height: 100dvh;
+        justify-content: center;
+        border-bottom: none;
       }
 
       .hero-divider { display: none; }
+      .hero-logo    { display: none; }
+      .hero-cta     { display: none; }
 
-      .hero-event h1 {
-        font-size: clamp(1.4rem, 6vw, 2rem);
-      }
+      .hero-event h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+      .hero-event p  { display: block; font-size: .9rem; max-width: 100%; }
 
-      .hero-event p { display: none; }
-
-      /* Avatar e agente: linha horizontal compacta */
       .hero-agent {
         flex-direction: row;
         flex-wrap: wrap;
@@ -637,86 +646,48 @@
         align-items: center;
       }
 
-      .agent-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
-      }
+      .agent-avatar { width: 44px; height: 44px; font-size: 1.3rem; }
 
-      /* Botão Testa-me no hero: menor */
-      .hero-cta { padding: 0; width: 100%; }
-      .hero-cta-btn {
-        font-size: 1.1rem;
-        padding: 12px 24px;
-        width: 100%;
-        justify-content: center;
-      }
-
-      /* Logo: esconde no mobile para poupar espaço */
-      .hero-logo { display: none; }
-
-      /* Body: coluna única (sidebar oculta, widget a 100%) */
-      .body {
+      /* Ecrã de boas-vindas mobile */
+      .mobile-welcome {
         display: flex;
         flex-direction: column;
-        height: auto;
-        min-height: 0;
-      }
-
-      /* Sidebar: oculta em mobile (info secundária) */
-      .sidebar { display: none; }
-
-      /* Área do widget: sem padding lateral, altura total do viewport disponível */
-      .widget-area {
-        padding: 0;
-        min-height: calc(100dvh - 130px);
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      /* Esconder colunas de cards decorativas */
-      .tc-column { display: none; }
-
-      /* Esconder SVG de conexões */
-      .connections-svg { display: none; }
-
-      /* Widget ocupa 100% da área */
-      .widget-center {
-        padding: 0;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 28px;
         width: 100%;
-        height: calc(100dvh - 130px);
       }
 
-      .wc-frame {
+      .mobile-welcome-hint {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(46,204,113,.08);
+        border: 1px solid rgba(46,204,113,.2);
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: .9rem;
+        color: #ccc;
+        line-height: 1.5;
         width: 100%;
-        height: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        box-shadow: none;
       }
 
-      .wc-label { display: none; }
-
-      /* Botão nova conversa: reposicionar */
-      .reset-btn {
-        top: 10px;
-        right: 10px;
-        font-size: .7rem;
-        padding: 6px 14px;
+      .mobile-welcome-hint .hint-icon {
+        font-size: 1.6rem;
+        flex-shrink: 0;
       }
 
-      /* Footer: mais compacto */
-      footer {
+      .mobile-topics {
+        display: flex;
         flex-wrap: wrap;
-        gap: 6px;
-        height: auto;
-        padding: 8px 16px;
-        text-align: center;
+        gap: 8px;
+        width: 100%;
       }
 
-      footer .sep { display: none; }
-      footer span:last-child { display: none; }
+      .mobile-topics .pill {
+        font-size: .8rem;
+        padding: 7px 14px;
+      }
     }
 
     /* Tablet: ajuste intermédio */
@@ -732,9 +703,7 @@
 
       .widget-area { padding: 0 24px; }
 
-      .wc-frame {
-        width: min(420px, 100%);
-      }
+      .wc-frame { width: min(420px, 100%); }
     }
   </style>
 </head>
@@ -777,6 +746,23 @@
       />
       <span>Powered by</span>
     </div>
+
+    <!-- MOBILE ONLY: dica + sugestões de perguntas -->
+    <div class="mobile-welcome">
+      <div class="mobile-welcome-hint">
+        <span class="hint-icon">💬</span>
+        <span>Toca no botão verde no canto inferior direito para falar com a <strong style="color:#fff">fil<span style="color:#f5c518">IPP</span>a</strong>!</span>
+      </div>
+      <div class="mobile-topics">
+        <span class="pill">Que cursos de Marketing existem?</span>
+        <span class="pill">Como me candidato ao IPP?</span>
+        <span class="pill">Quero uma bolsa de estudo</span>
+        <span class="pill">O que é o Erasmus+?</span>
+        <span class="pill">Onde fica o IPPortalegre?</span>
+        <span class="pill">Como acedo ao Campus Virtual?</span>
+      </div>
+    </div>
+
   </header>
 
   <!-- BODY -->
@@ -1101,6 +1087,14 @@
 
     window.addEventListener('load',   drawConnections);
     window.addEventListener('resize', drawConnections);
+
+    /* ── Balão flutuante apenas em mobile ─────────────────── */
+    if (window.innerWidth <= 768) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://app.gptmaker.ai/widget/3F3420366E56D3131D8E4AA03E354AA6/float.js';
+      document.body.appendChild(s);
+    }
   </script>
 
   <!-- FOOTER -->

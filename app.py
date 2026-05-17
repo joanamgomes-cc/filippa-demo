@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Flask, jsonify, send_file, send_from_directory
+from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -14,6 +14,22 @@ AGENT_ID  = "3F336FF8479AC092E19EB6E2FF34077D"
 def auth_headers():
     token = os.environ.get("GPTMAKER_TOKEN", "")
     return {"Authorization": f"Bearer {token}"}
+
+
+def get_latest_widget_chat():
+    h = auth_headers()
+    r = requests.get(f"{API_BASE}/workspace/{WORKSPACE}/chats", headers=h, timeout=10)
+    if not r.ok:
+        return None
+    chats = r.json()
+    widget_chats = [
+        c for c in chats
+        if c.get("agentId") == AGENT_ID and c.get("type") == "WIDGET"
+    ]
+    if not widget_chats:
+        return None
+    widget_chats.sort(key=lambda x: x.get("time", 0), reverse=True)
+    return widget_chats[0]["id"]
 
 
 @app.route("/")
@@ -32,24 +48,36 @@ def reset():
     if not h["Authorization"].replace("Bearer ", "").strip():
         return jsonify({"ok": False, "error": "GPTMAKER_TOKEN not set"}), 500
 
-    r = requests.get(f"{API_BASE}/workspace/{WORKSPACE}/chats", headers=h, timeout=10)
-    if not r.ok:
-        return jsonify({"ok": False, "error": f"API error: {r.status_code}"}), 502
-
-    chats = r.json()
-    widget_chats = [
-        c for c in chats
-        if c.get("agentId") == AGENT_ID and c.get("type") == "WIDGET"
-    ]
-
-    if not widget_chats:
+    chat_id = get_latest_widget_chat()
+    if not chat_id:
         return jsonify({"ok": True, "message": "no widget chat found"})
-
-    widget_chats.sort(key=lambda x: x.get("time", 0), reverse=True)
-    chat_id = widget_chats[0]["id"]
 
     d = requests.delete(f"{API_BASE}/chat/{chat_id}/messages", headers=h, timeout=10)
     return jsonify({"ok": d.ok, "chatId": chat_id, "status": d.status_code})
+
+
+@app.route("/send", methods=["POST"])
+def send():
+    h = auth_headers()
+    if not h["Authorization"].replace("Bearer ", "").strip():
+        return jsonify({"ok": False, "error": "GPTMAKER_TOKEN not set"}), 500
+
+    body = request.get_json(silent=True) or {}
+    message = body.get("message", "").strip()
+    if not message:
+        return jsonify({"ok": False, "error": "no message provided"}), 400
+
+    chat_id = get_latest_widget_chat()
+    if not chat_id:
+        return jsonify({"ok": False, "error": "no active widget chat"}), 404
+
+    r = requests.post(
+        f"{API_BASE}/chat/{chat_id}/send-message",
+        headers={**h, "Content-Type": "application/json"},
+        json={"message": message},
+        timeout=10,
+    )
+    return jsonify({"ok": r.ok, "chatId": chat_id, "status": r.status_code})
 
 
 if __name__ == "__main__":

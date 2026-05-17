@@ -801,18 +801,42 @@
 
     async function sendPill(el) {
       const message = el.textContent.trim();
-      el.classList.add('sending');
-      try {
-        await fetch('/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message })
-        });
-        // Recarrega o iframe para mostrar a mensagem enviada
-        const iframe = document.querySelector('.wc-frame iframe');
-        if (iframe) { iframe.src = WIDGET_URL + '?t=' + Date.now(); }
-      } catch (e) { /* ignora erros de rede */ }
-      el.classList.remove('sending');
+      try { await navigator.clipboard.writeText(message); } catch (e) {}
+
+      // Feedback visual na pill
+      const original = el.textContent;
+      el.textContent = '✓ Copiado!';
+      el.style.borderColor = 'var(--verde-neon)';
+      el.style.color = 'var(--verde-neon)';
+      setTimeout(() => {
+        el.textContent = original;
+        el.style.borderColor = '';
+        el.style.color = '';
+      }, 1800);
+
+      // Scroll para o widget e mostra dica
+      document.getElementById('widget-section').scrollIntoView({ behavior: 'smooth' });
+      showToast('Pergunta copiada — cola no chat com Ctrl+V');
+    }
+
+    function showToast(msg) {
+      let t = document.getElementById('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.style.cssText = `
+          position:fixed; bottom:70px; left:50%; transform:translateX(-50%);
+          background:#1a1a1a; border:1px solid var(--verde-neon); color:var(--verde-neon);
+          font-family:'Inter',sans-serif; font-size:.75rem; font-weight:500;
+          padding:9px 20px; border-radius:20px; z-index:999;
+          opacity:0; transition:opacity .25s;
+        `;
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
     }
 
     const WIDGET_URL = 'https://app.gptmaker.ai/widget/3F33EEC2BF95E358FD9D4AA03E354AA6/iframe';

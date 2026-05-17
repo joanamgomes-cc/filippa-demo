@@ -609,6 +609,133 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+
+    /* ─── RESPONSIVE — MOBILE ─── */
+    @media (max-width: 768px) {
+
+      /* Hero: coluna única, padding reduzido */
+      .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 20px 16px;
+        gap: 14px;
+      }
+
+      .hero-divider { display: none; }
+
+      .hero-event h1 {
+        font-size: clamp(1.4rem, 6vw, 2rem);
+      }
+
+      .hero-event p { display: none; }
+
+      /* Avatar e agente: linha horizontal compacta */
+      .hero-agent {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        align-items: center;
+      }
+
+      .agent-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      /* Botão Testa-me no hero: menor */
+      .hero-cta { padding: 0; width: 100%; }
+      .hero-cta-btn {
+        font-size: 1.1rem;
+        padding: 12px 24px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Logo: esconde no mobile para poupar espaço */
+      .hero-logo { display: none; }
+
+      /* Body: coluna única (sidebar oculta, widget a 100%) */
+      .body {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+      }
+
+      /* Sidebar: oculta em mobile (info secundária) */
+      .sidebar { display: none; }
+
+      /* Área do widget: sem padding lateral, altura total do viewport disponível */
+      .widget-area {
+        padding: 0;
+        min-height: calc(100dvh - 130px);
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      /* Esconder colunas de cards decorativas */
+      .tc-column { display: none; }
+
+      /* Esconder SVG de conexões */
+      .connections-svg { display: none; }
+
+      /* Widget ocupa 100% da área */
+      .widget-center {
+        padding: 0;
+        width: 100%;
+        height: calc(100dvh - 130px);
+      }
+
+      .wc-frame {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        box-shadow: none;
+      }
+
+      .wc-label { display: none; }
+
+      /* Botão nova conversa: reposicionar */
+      .reset-btn {
+        top: 10px;
+        right: 10px;
+        font-size: .7rem;
+        padding: 6px 14px;
+      }
+
+      /* Footer: mais compacto */
+      footer {
+        flex-wrap: wrap;
+        gap: 6px;
+        height: auto;
+        padding: 8px 16px;
+        text-align: center;
+      }
+
+      footer .sep { display: none; }
+      footer span:last-child { display: none; }
+    }
+
+    /* Tablet: ajuste intermédio */
+    @media (min-width: 769px) and (max-width: 1100px) {
+      .hero { padding: 20px 24px; gap: 16px; }
+      .hero-event p { font-size: .78rem; }
+      .hero-logo img { height: 60px; }
+
+      .body { grid-template-columns: 240px 1fr; }
+
+      .tc-column { display: none; }
+      .connections-svg { display: none; }
+
+      .widget-area { padding: 0 24px; }
+
+      .wc-frame {
+        width: min(420px, 100%);
+      }
+    }
   </style>
 </head>
 <body>

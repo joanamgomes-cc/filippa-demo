@@ -985,14 +985,28 @@
       const btn = document.querySelector('.reset-btn');
       if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
 
+      let ok = false;
       try {
-        await fetch('/reset', { method: 'POST' });
+        const res = await fetch('/reset', { method: 'POST' });
+        const data = await res.json();
+        ok = data.ok;
       } catch (e) {}
 
-      const iframe = document.querySelector('.wc-frame iframe');
-      if (iframe) { iframe.src = WIDGET_URL + '?t=' + Date.now(); }
+      // Recriar iframe do zero para limpar estado local + cache
+      const frame = document.querySelector('.wc-frame');
+      if (frame) {
+        const old = frame.querySelector('iframe');
+        if (old) frame.removeChild(old);
+        const fresh = document.createElement('iframe');
+        fresh.src = WIDGET_URL + '?t=' + Date.now();
+        fresh.setAttribute('frameborder', '0');
+        fresh.setAttribute('allow', 'microphone');
+        fresh.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+        frame.appendChild(fresh);
+      }
 
       if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+      showToast(ok ? 'Conversa reiniciada com sucesso!' : 'Erro ao reiniciar — verifica o servidor');
     }
 
     /* ── Conexões animadas ─────────────────────────────────── */

@@ -990,7 +990,7 @@
       if (old) frame.removeChild(old);
 
       const fresh = document.createElement('iframe');
-      fresh.src = WIDGET_URL;
+      fresh.src = WIDGET_URL + '?t=' + Date.now();
       fresh.setAttribute('frameborder', '0');
       fresh.setAttribute('allow', 'microphone');
       fresh.style.cssText = 'width:100%;height:100%;border:none;display:block;';

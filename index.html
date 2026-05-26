@@ -605,6 +605,24 @@
       50%       { box-shadow: 0 0 42px rgba(46,204,113,.55); }
     }
 
+    .wc-hint {
+      font-size: .72rem;
+      color: var(--verde-neon);
+      opacity: .75;
+      letter-spacing: .3px;
+    }
+
+    .wc-hint kbd {
+      display: inline-block;
+      background: rgba(46,204,113,.12);
+      border: 1px solid rgba(46,204,113,.35);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: .68rem;
+      font-weight: 600;
+    }
+
     /* ─── Scrollbar escura ─── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -848,7 +866,7 @@
           </div>
           <div class="tc-text">
             <strong>Bilingue</strong>
-            <span>Português · English</span>
+            <span>Português · Inglês</span>
           </div>
         </div>
 
@@ -874,6 +892,7 @@
           ></iframe>
 
         </div>
+        <p class="wc-hint">Clica <kbd>ENTER</kbd> para enviar a mensagem.</p>
       </div>
 
       <!-- CARDS DIREITA -->
@@ -962,19 +981,20 @@
 
     const WIDGET_URL = 'https://app.gptmaker.ai/widget/3F3420366E56D3131D8E4AA03E354AA6/iframe';
 
-    async function resetChat() {
-      const btn = document.querySelector('.reset-btn');
-      if (btn) { btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
+    function resetChat() {
+      const frame = document.querySelector('.wc-frame');
+      if (!frame) return;
 
-      try {
-        await fetch('/reset', { method: 'POST' });
-      } catch (e) { /* ignora erros de rede */ }
+      // Remove e recria o iframe — força sessão nova no widget
+      const old = frame.querySelector('iframe');
+      if (old) frame.removeChild(old);
 
-      // recarrega o iframe com cache-bust após limpeza do histórico
-      const iframe = document.querySelector('.wc-frame iframe');
-      if (iframe) { iframe.src = WIDGET_URL + '?t=' + Date.now(); }
-
-      if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+      const fresh = document.createElement('iframe');
+      fresh.src = WIDGET_URL;
+      fresh.setAttribute('frameborder', '0');
+      fresh.setAttribute('allow', 'microphone');
+      fresh.style.cssText = 'width:100%;height:100%;border:none;display:block;';
+      frame.appendChild(fresh);
     }
 
     /* ── Conexões animadas ─────────────────────────────────── */
